@@ -87,7 +87,7 @@
 		================================================== -->
 		<main role="main" class="container">
 			<div class="row">
-				<div style="max-width: 64%; flex: 0 0 64%;" class="col-7">
+				<div style="max-width: 65%;flex: 0 0 65%;" class="col-7">
 					<div id="main_content_top"></div>
 					<div id="main_content_mid">
 						@yield('main')
@@ -160,7 +160,7 @@
 						<h2 class="section_text text-muted">Player ranking</h2>
 						<table style="margin-bottom: 0;" class="table table-custom table-hover">
 							<tbody>
-								@foreach(json_decode($ranking, true) as $key => $value)
+								@foreach(array_slice(json_decode($ranking, true), 0, 5) as $key => $value)
 								<tr>
 									<th scope="row">{{ $key+1 }}</th>
 									<td>{{ $value['name'] }}</td>

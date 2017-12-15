@@ -70,7 +70,7 @@ class RegisterController extends Controller
         return User::create([
             'login' => $data['username_mt2'],
             'email' => $data['email_mt2'],
-            'social_id' => $data['del_code_mt2'],
+            'social_id' => '1234567',
             'password' => strtoupper("*".sha1(sha1($data['password_mt2'], true))),
         ]);
     }
