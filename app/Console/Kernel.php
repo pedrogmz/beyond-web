@@ -35,7 +35,7 @@ class Kernel extends ConsoleKernel
                 ->orderBy('playtime', '')
                 ->get();
             Storage::disk('local')->put('ranking.txt', $ranking);
-        })->everyMinute();
+        })->everyThirtyMinutes();
     }
 
     /**

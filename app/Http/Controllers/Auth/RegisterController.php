@@ -51,7 +51,6 @@ class RegisterController extends Controller
     {
         return Validator::make($data, [
             'username_mt2' => 'required|max:255|unique:account,login',
-            'del_code_mt2' => 'required|numeric',
             'tyc_checkbox' => 'required|accepted',
             'password_mt2' => 'required|min:6|confirmed',
             'g-recaptcha-response' => 'required|captcha'
