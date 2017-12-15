@@ -14,6 +14,7 @@ class User extends Authenticatable
 
     protected $table = 'account';
     public $timestamps = false;
+    public $remember_token = false;
 
 	/**
      * The event map for the model.

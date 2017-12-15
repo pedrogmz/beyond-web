@@ -106,8 +106,12 @@
 							<span style="color: #9b7b60; font-size: 1.5rem;">Bienvenido, {{ Auth::user()->login }}.</span>
 							<div class="login_blocks"><a class="text-white text-uppercase" href="">Account settings</a></div>
 							<div class="login_blocks"><a class="text-white text-uppercase" href="">Vote 4 us</a></div>
-							<button class="btn-custom"><span>LOGOUT</span></button>
-						@else
+							<a id="logout" href="#"><button class="btn-custom"><span>LOGOUT</span></button></a>
+                  			<form id="logout-form" action="{{ route('logout') }}" method="POST" class="hide">
+                    			{{ csrf_field() }}
+                  			</form>
+<!-- 							<a href="{{ route('logout') }}"><button class="btn-custom"><span>LOGOUT</span></button></a>
+						 -->						@else
 							<a href="{{ route('download') }}"><button type="button" class="download-btn"><span>Free game download</span></button></a>
 							@if (session('confirmation-success'))
 								@component('front.components.alert')
@@ -125,6 +129,11 @@
 									{!! session('confirmation-danger') !!}
 								@endcomponent
 							@endif
+							@if (session('warning'))
+                        	<div class="alert alert-warning">
+                            	{{ session('warning') }}
+                        	</div>
+                    		@endif
 							<form role="form" method="POST" action="{{ route('login') }}">
 								{{ csrf_field() }}
 								<div class="text" style="display: inline-flex;">SIGN IN</div>
@@ -180,7 +189,7 @@
 						<br><br>
 						<span class="text">Featured video</span>
 						<div class="embed-responsive embed-responsive-1by1">
-							<iframe class="embed-responsive-item" width="240" height="163" src="https://www.youtube.com/embed/f3pMxafKvzM" frameborder="0" gesture="media" allow="encrypted-media" allowfullscreen></iframe>
+							<iframe class="embed-responsive-item" width="240" height="163" src="https://www.youtube.com/embed/VVMKCuWfZas" frameborder="0" gesture="media" allow="encrypted-media" allowfullscreen></iframe>
 						</div>
 						
 					</div>
@@ -210,7 +219,7 @@
 								<a href="https://discord.gg/hXdV7af" target="_blank"><div id="discord"></div></a>
 								<a href="https://www.facebook.com/Beyond2Social/" target="_blank"><div id="facebook"></div></a>
 								<a href="https://www.youtube.com/channel/UCet4L09QgvjaVHGksW6yyZA" target="_blank"><div id="youtube"></div></a>
-								<a href="https://www.elitepvpers.com/forum/metin2-pserver-news/4349416-en-es-beyond2-newschool-server-lv-max-200-1500-players-online.html" target="_blank"><div id="epvp"></div></a>
+								<a href="https://www.elitepvpers.com/forum/metin2-pserver-news/4406889-100-fun-pvp-server-lvl-105-max-beyond2-battle.html" target="_blank"><div id="epvp"></div></a>
 							</div>
 						</div>
 					</div>

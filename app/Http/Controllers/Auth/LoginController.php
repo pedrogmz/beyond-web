@@ -110,18 +110,29 @@ class LoginController extends Controller
 
 		// Get user record
 		$user = User::where('login', $request->get('username_mt2'))
-					->whereRaw('password = PASSWORD("'.$request->get('password_mt2').'")')
-					->first();
+					->whereRaw('password = PASSWORD("'.$request->get('password_mt2').'")');
 
-		if($request->get('username_mt2') != $user->login) {
-			\Session::put('errors', 'Cant login');
-			return back();
+		if($user->count() < 1) {
+			return back()->with('warning', 'No existen esos datos');
 		}
 
 		// Set Auth Details
-		\Auth::login($user);
+		\Auth::login($user->first());
 		
 		// Redirect home page
 		return redirect()->route('home');
 	}
+
+	/**
+     * Log the user out of the application.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function logout(Request $request)
+    {
+        auth()->logout();
+        $request->session()->invalidate();
+        return redirect('/');
+    }
 }

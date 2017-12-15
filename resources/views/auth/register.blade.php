@@ -5,21 +5,23 @@
 		<div style=" display: flex;" class="align-items-center section-header"><span aria-hidden="true" class="info-icon"></span><span class="text">Create an account</span></div>
 		<div class="primary-content">
 			@if ($errors->any())
-			    <div class="alert alert-danger">
-			        <ul>
-			            @foreach ($errors->all() as $error)
-			                <li>{{ $error }}</li>
-			            @endforeach
-			        </ul>
-			    </div>
+				<div class="alert alert-danger">
+					<ul>
+						@foreach ($errors->all() as $error)
+							<li>{{ $error }}</li>
+						@endforeach
+					</ul>
+				</div>
 			@endif
-			@if (session('confirmation-success'))
-				@component('front.components.alert')
-					@slot('type')
-						success
-					@endslot
-					{!! session('confirmation-success') !!}
-				@endcomponent
+			@if (session('status'))
+				<div class="alert alert-success">
+					{{ session('status') }}
+				</div>
+			@endif
+			@if (session('warning'))
+				<div class="alert alert-warning">
+					{{ session('warning') }}
+				</div>
 			@endif
 			<form role="form" method="POST" action="{{ route('register') }}">
 				{{ csrf_field() }}
@@ -52,9 +54,9 @@
 				</div>
 				<div class="form-group row">
 					<label for="del_code" style="color: #949494; font-size: 1.7rem;" class="col-sm-7 col-form-label">@lang('strings.regFormDelCode')</label>
-    				<div class="col-sm-5">
-      					1234567
-    				</div>
+					<div class="col-sm-5">
+						1234567
+					</div>
 				</div>
 				<div class="form-check">
 					<input type="checkbox" name="tyc_checkbox" id="tyc_checkbox">

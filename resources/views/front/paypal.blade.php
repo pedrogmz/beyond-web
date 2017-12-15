@@ -5,7 +5,7 @@
 
 	<section id="buycoins">
 		<div class="main_content_background">
-			<a href="https://iframes.recursosmoviles.com/v3/?wmid=7657&cid=37672&m=sms&xf=Tu%20usuario&x=Ingresa%20aqui%20tu%20ID&pcreditcard=500%20Coins,1100%20Coins,1650%20Coins,2200%20Coins,6000%20Coins&pdeposit=500%20Coins,1100%20Coins,1650%20Coins,2200%20Coins,6000%20Coins&ppaypal=500%20Coins,1100%20Coins,1650%20Coins,2200%20Coins&ppaysafecard=500%20Coins,1100%20Coins,1650%20Coins,2200%20Coins,6000%20Coins&psafetypay=1100%20Coins,1650%20Coins,2200%20Coins,6000%20Coins&psafetypaycash=1100%20Coins,1650%20Coins,2200%20Coins,6000%20Coins&ppayvalida=500%20Coins,1100%20Coins,1650%20Coins,2200%20Coins,6000%20Coins"><button class="download-btn">&nbsp; @lang('Comprar con RM')</button></a>
+			<a href="https://iframes.recursosmoviles.com/v3/?wmid=2963&cid=39686&m=sms&xf=Tu%20usuario&x=Ingresa%20aqui%20tu%20ID&pcreditcard=500%20Coins,1100%20Coins,1650%20Coins,2200%20Coins,6000%20Coins&pdeposit=500%20Coins,1100%20Coins,1650%20Coins,2200%20Coins,6000%20Coins&ppaypal=500%20Coins,1100%20Coins,1650%20Coins,2200%20Coins&ppaysafecard=500%20Coins,1100%20Coins,1650%20Coins,2200%20Coins,6000%20Coins&psafetypay=1100%20Coins,1650%20Coins,2200%20Coins,6000%20Coins&psafetypaycash=1100%20Coins,1650%20Coins,2200%20Coins,6000%20Coins&ppayvalida=500%20Coins,1100%20Coins,1650%20Coins,2200%20Coins,6000%20Coins"><button class="download-btn">&nbsp; @lang('Comprar con RM')</button></a>
 		</div>
 		<div class="main_content_background">
 			@php
@@ -26,7 +26,7 @@
 					$cancel_url = route('buycoins');
 					$notify_url = 'http://billing.btmt2.com/zRuzkSqcXfi.php';
 
-					$item_name = 'Server: Beyond - New - '.$coins.' coins - Account: '.Auth::user()->login;
+					$item_name = 'Server: Beyond - PVP - '.$coins.' coins - Account: '.Auth::user()->login;
 					$item_amount = $price;
 					$querystring = '';
 
