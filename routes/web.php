@@ -20,6 +20,11 @@
 // Home
 Route::name('home')->get('/', 'Front\PostController@index');
 
+Route::name('buycoins')->get('/buycoins', 'Itemshop@index');
+Route::name('buycoins')->post('/buycoins', 'Itemshop@index');
+
+Route::name('download')->get('/download', 'Download@index');
+
 // Contact
 Route::resource('contacts', 'Front\ContactController', ['only' => ['create', 'store']]);
 
@@ -42,6 +47,15 @@ Route::name('category')->get('category/{category}', 'Front\PostController@catego
 
 // Authentification
 Auth::routes();
+
+Route::group(['prefix'=>'language'], function (){    
+    Route::group(['prefix'=>'{lang}'], function (){
+        Route::get('/', function ($lang) {
+            App::setLocale($lang);
+            return view('front.index');
+        });            
+     });
+});
 
 
 /*

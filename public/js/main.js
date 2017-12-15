@@ -625,3 +625,13 @@
  
 
 })(jQuery);
+
+$(document).ready(function(){
+	$('#jugadores-reino[data-toggle="popover"]').popover({
+		trigger: 'hover',
+        'placement': 'bottom',
+		'html': true,
+		});
+		
+	$('.itemtooltip[data-toggle="tooltip"]').tooltip();
+});

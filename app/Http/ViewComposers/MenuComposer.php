@@ -4,6 +4,7 @@ namespace App\Http\ViewComposers;
 
 use Illuminate\View\View;
 use App\Models\Category;
+use Illuminate\Support\Facades\Storage;
 
 class MenuComposer
 {
@@ -15,6 +16,7 @@ class MenuComposer
      */
     public function compose(View $view)
     {
-        $view->with('categories', Category::select('title', 'slug')->get());
+        $ranking = Storage::get('ranking.txt');
+        $view->with('ranking', $ranking);
     }
 }

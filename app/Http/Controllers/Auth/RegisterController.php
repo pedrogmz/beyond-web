@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Auth;
 
 use App\Models\User;
 use App\Http\Controllers\Controller;
+use App\Rules\MaxRegistrations;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Bestmomo\LaravelEmailConfirmation\Traits\RegistersUsers;
+use Illuminate\Auth\Events\Registered;
 
 class RegisterController extends Controller
 {
@@ -47,9 +50,11 @@ class RegisterController extends Controller
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            'name' => 'required|max:255|unique:users',
-            'email' => 'required|email|max:255|unique:users',
-            'password' => 'required|min:6|confirmed',
+            'username_mt2' => 'required|max:255|unique:account,login',
+            'del_code_mt2' => 'required|numeric',
+            'tyc_checkbox' => 'required|accepted',
+            'password_mt2' => 'required|min:6|confirmed',
+            'g-recaptcha-response' => 'required|captcha'
         ]);
     }
 
@@ -61,10 +66,29 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
+
         return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => bcrypt($data['password']),
+            'login' => $data['username_mt2'],
+            'email' => $data['email_mt2'],
+            'social_id' => $data['del_code_mt2'],
+            'password' => strtoupper("*".sha1(sha1($data['password_mt2'], true))),
         ]);
+    }
+
+    /**
+     * Handle a registration request for the application.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+    */
+    public function register(Request $request)
+    {
+        $request->validate([
+            'email_mt2' => ['required', 'email', new MaxRegistrations, 'max:255'],
+        ]);
+        $this->validator($request->all())->validate();
+        event(new Registered($user = $this->create($request->all())));
+        return $this->registered($request, $user)
+                        ?: redirect($this->redirectPath());
     }
 }

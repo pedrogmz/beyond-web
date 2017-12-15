@@ -12,14 +12,17 @@ class User extends Authenticatable
 {
 	use Notifiable, IngoingTrait;
 
+    protected $table = 'account';
+    public $timestamps = false;
+
 	/**
      * The event map for the model.
      *
      * @var array
      */
-    protected $dispatchesEvents = [
+    /*protected $dispatchesEvents = [
         'created' => ModelCreated::class,
-    ];
+    ];*/
 
     /**
      * The attributes that are mass assignable.
@@ -27,7 +30,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'role', 'confirmed', 'valid'
+        'login', 'email', 'password', 'social_id'
     ];
 
     /**

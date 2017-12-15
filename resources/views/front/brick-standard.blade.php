@@ -1,4 +1,4 @@
-<article class="brick entry format-standard animate-this">
+<article style="width: 50%;" class="brick entry format-standard animate-this">
 
     <div class="entry-thumb">
         <a href="{{ url('posts/' . $post->slug) }}" class="thumb-link"><img src="{{ $post->image }}"></a>

@@ -2,6 +2,8 @@
 
 namespace App\Console;
 
+use DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -24,8 +26,16 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')
-        //          ->hourly();
+        $schedule->call(function () {
+            $ranking = DB::table('player.player')
+                ->join('player.player_index', 'player.id', '=', 'player_index.id')
+                ->select('player.name', 'player.level', 'player.exp', 'player.playtime', 'player_index.empire')
+                ->orderBy('level', 'desc')
+                ->orderBy('exp', 'desc')
+                ->orderBy('playtime', '')
+                ->get();
+            Storage::disk('local')->put('ranking.txt', $ranking);
+        })->everyMinute();
     }
 
     /**
