@@ -7,7 +7,7 @@
 	<!--- Basic page needs
 		================================================== -->
 		<meta charset="utf-8">
-		<title>{{ config('app.name') }}</title>
+		<title>Beyond2 Battle - Free to play MMORPG</title>
 		<meta name="robots" content="index, follow"/>
 		<meta name="creator" content="Beyond to Metin2"/>
 		<meta name="description" content="{{ config('app.title') }} - MMORPG de Acción Oriental. Descubre nuevas formas de juego, 100% newschool, Equilibrio PvP/PvM. No te lo pierdas, somos más de 500 en línea al día.">

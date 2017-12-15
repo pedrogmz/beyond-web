@@ -30,6 +30,7 @@ class Kernel extends ConsoleKernel
             $ranking = DB::table('player.player')
                 ->join('player.player_index', 'player.id', '=', 'player_index.id')
                 ->select('player.name', 'player.level', 'player.exp', 'player.playtime', 'player_index.empire')
+                ->where('player.name', 'not like', '[%]%')
                 ->orderBy('level', 'desc')
                 ->orderBy('exp', 'desc')
                 ->orderBy('playtime', '')
