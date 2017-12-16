@@ -17,6 +17,8 @@ class MenuComposer
     public function compose(View $view)
     {
         $ranking = Storage::get('ranking.txt');
+        $onlinePlayers = Storage::get('online_players.txt');
         $view->with('ranking', $ranking);
+        $view->with('onlinePlayers', $onlinePlayers);
     }
 }

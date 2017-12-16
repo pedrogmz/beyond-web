@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <!--[if IE 8 ]><html class="no-js oldie ie8" lang="en"> <![endif]-->
 <!--[if IE 9 ]><html class="no-js oldie ie9" lang="en"> <![endif]-->
-<!--[if (gte IE 9)|!(IE)]><!--><html class="no-js" lang="{{ config('app.locale') }}"> <!--<![endif]-->
-<head>
-
+<!--[if (gte IE 9)|!(IE)]><!--><html class="no-js" lang="{{ config('app.locale') }}"><!--<![endif]-->
+	
+	<head>
 	<!--- Basic page needs
 		================================================== -->
 		<meta charset="utf-8">
@@ -68,10 +68,10 @@
 								</li>
 							@endif
 							<li class="nav-item" {{ currentRoute('home') }}>
-								<a class="nav-link" href="board">@lang('strings.hBoard')</a>
+								<a class="nav-link" href="https://www.btmt2.com/board/index.php?/forum/47-beyond2-battle-100-pvp/">@lang('strings.hBoard')</a>
 							</li>
 							<li class="nav-item" {{ currentRoute('home') }}>
-								<a class="nav-link" href="events">@lang('strings.mEvents')</a>
+								<a class="nav-link" href="https://www.btmt2.com/board/index.php?/calendar/2-old-school-eventos/">@lang('strings.mEvents')</a>
 							</li>
 						</ul>
 					</div>
@@ -100,6 +100,14 @@
 					<!-- User panel widget
 						================================================== -->
 					<div id="sidebar_top"></div>
+					<div class="online text-center position-absolute">
+						<div id="online_top"></div>
+						<div id="online_mid">
+							<div style="width: 100%;font-size: 2.5rem;color:#84C233">{{ $onlinePlayers }}</div>
+							@lang('strings.hOnlinePlayers')
+						</div>
+					</div>
+					
 					<div style="padding: 0 11% !important;" id="sidebar_mid">
 						@if (Auth::check())
 							<button type="button" class="ishop-btn"><span class="align-items-center" style="display: flex;"><span aria-hidden="true" class="coin-icon"></span>{{ Auth::user()->coins }} Beyond Coins</span></button>
@@ -110,8 +118,7 @@
                   			<form id="logout-form" action="{{ route('logout') }}" method="POST" class="hide">
                     			{{ csrf_field() }}
                   			</form>
-<!-- 							<a href="{{ route('logout') }}"><button class="btn-custom"><span>LOGOUT</span></button></a>
-						 -->						@else
+						@else
 							<a href="{{ route('download') }}"><button type="button" class="download-btn"><span>Free game download</span></button></a>
 							@if (session('confirmation-success'))
 								@component('front.components.alert')
@@ -267,5 +274,5 @@
 
 	@yield('scripts')
 
-   </body>
-   </html>
+	</body>
+</html>

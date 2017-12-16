@@ -27,17 +27,25 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->call(function () {
+
+            // Ranking
             $ranking = DB::table('player.player')
                 ->join('player.player_index', 'player.id', '=', 'player_index.id')
                 ->join('account.account', 'player.account_id', '=', 'account.id')
                 ->select('player.name', 'player.level', 'player.exp', 'player.playtime', 'player_index.empire')
-                ->where('account.status' '!=' , 'BLOCK')
+                ->where('account.status', '!=' , 'BLOCK')
                 ->where('player.name', 'not like', '[%]%')
                 ->orderBy('level', 'desc')
                 ->orderBy('exp', 'desc')
                 ->orderBy('playtime', '')
                 ->get();
             Storage::disk('local')->put('ranking.txt', $ranking);
+
+            // Online Players Now
+            $onlinePlayers = DB::table('player.player')
+                ->whereRaw('DATE_SUB(NOW(), INTERVAL 100 MINUTE) < last_play')
+                ->count();
+            Storage::disk('local')->put('online_players.txt', $onlinePlayers);
         })->everyThirtyMinutes();
     }
 
