@@ -29,7 +29,9 @@ class Kernel extends ConsoleKernel
         $schedule->call(function () {
             $ranking = DB::table('player.player')
                 ->join('player.player_index', 'player.id', '=', 'player_index.id')
+                ->join('account.account', 'player.account_id', '=', 'account.id')
                 ->select('player.name', 'player.level', 'player.exp', 'player.playtime', 'player_index.empire')
+                ->where('account.status' '!=' , 'BLOCK')
                 ->where('player.name', 'not like', '[%]%')
                 ->orderBy('level', 'desc')
                 ->orderBy('exp', 'desc')
