@@ -61,7 +61,7 @@ class Kernel extends ConsoleKernel
                 ->orderBy('id', 'desc')
                 ->first();
             Storage::disk('local')->put('last_char.txt', $lastChar->name);
-        })->everyMinute();
+        })->everyThirtyMinutes();
     }
 
     /**

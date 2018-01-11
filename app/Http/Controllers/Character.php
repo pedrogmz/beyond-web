@@ -18,7 +18,7 @@ class Character extends Controller
             ->select('player.*', 'player_index.empire')
             ->where('player.id', $id)
             ->first();
-        $diferencia = time() - $char->last_play;
+        $diferencia = time() - strtotime($char->last_play);
         if (Cookie::get('Desbug') != '1') {
             if( $diferencia > (10*60) ) {
                 if($char->empire == 1) {
