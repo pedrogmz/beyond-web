@@ -143,7 +143,7 @@
 							<button type="button" class="ishop-btn"><span class="align-items-center" style="display: flex;"><span aria-hidden="true" class="coin-icon"></span>{{ Auth::user()->coins }} Beyond Coins</span></button>
 							<span style="color: #9b7b60; font-size: 1.5rem;">Bienvenido, {{ Auth::user()->login }}.</span>
 							<div class="login_blocks"><a class="text-white text-uppercase" href="">Account settings</a></div>
-							<div class="login_blocks"><a class="text-white text-uppercase" href="{{route('user/charlist')}}">Character list</a></div>
+							<div class="login_blocks"><a class="text-white text-uppercase" href="{{route('charlist')}}">Character list</a></div>
 							<div class="login_blocks"><a class="text-white text-uppercase" href="">Vote 4 us</a></div>
 							<a id="logout" href="#"><button class="btn-custom"><span>LOGOUT</span></button></a>
                   			<form id="logout-form" action="{{ route('logout') }}" method="POST" class="hide">
