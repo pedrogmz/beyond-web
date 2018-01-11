@@ -37,16 +37,31 @@ class Kernel extends ConsoleKernel
                 ->where('player.name', 'not like', '[%]%')
                 ->orderBy('level', 'desc')
                 ->orderBy('exp', 'desc')
-                ->orderBy('playtime', '')
+                ->orderBy('playtime', 'desc')
                 ->get();
             Storage::disk('local')->put('ranking.txt', $ranking);
 
-            // Online Players Now
+            // Online players now
             $onlinePlayers = DB::table('player.player')
                 ->whereRaw('DATE_SUB(NOW(), INTERVAL 100 MINUTE) < last_play')
                 ->count();
             Storage::disk('local')->put('online_players.txt', $onlinePlayers);
-        })->everyThirtyMinutes();
+
+            // Total accounts created
+            $accountsCreated = DB::table('account.account')->count();
+            Storage::disk('local')->put('total_accounts.txt', $accountsCreated);
+
+            // Total characters created
+            $charsCreated = DB::table('player.player')->count();
+            Storage::disk('local')->put('total_characters.txt', $charsCreated);
+
+            // Last character
+            $lastChar = DB::table('player.player')
+                ->select('name')
+                ->orderBy('id', 'desc')
+                ->first();
+            Storage::disk('local')->put('last_char.txt', $lastChar->name);
+        })->everyMinute();
     }
 
     /**

@@ -19,13 +19,21 @@ class ResetPassword extends Notification implements ShouldQueue
     public $token;
 
     /**
+     * The user name.
+     *
+     * @var string
+     */
+    public $login;
+
+    /**
      * Create a notification instance.
      *
      * @param  string $token
      */
-    public function __construct($token)
+    public function __construct($token, $login)
     {
         $this->token = $token;
+        $this->login = $login;
     }
 
     /**
@@ -47,7 +55,7 @@ class ResetPassword extends Notification implements ShouldQueue
     public function toMail()
     {
         return (new MailMessage)
-            ->line(__('You are receiving this email because we received a password reset request for your account.'))
+            ->line(__('You are receiving this email because we received a password reset request for your account: '.$this->login.'.'))
             ->line(__('Click the button below to reset your password:'))
             ->action(__('Reset Password'), url('password/reset', $this->token))
             ->line(__('If you did not request a password reset, no further action is required.'));

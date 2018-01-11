@@ -779,6 +779,7 @@ input[type=checkbox]:checked + label {
 	color: #ffffff;
 	font-size: 1.9rem;
 	opacity: 0.8;
+	overflow-wrap: break-word;
 	text-shadow:
 	-1px -1px 1px #000,
 	1px -1px 1px #000,
@@ -2315,7 +2316,100 @@ header .logo a {
  *  11. content wrap - (_layout.scss)
  * ------------------------------------------------------------------- */
 
- .system_category_value {
+.stats-value {
+    display: inline-block;
+    vertical-align: middle;
+    font-family: Arial;
+    font-weight: 600;
+    font-size: 14px;
+    color: #937461;
+}
+
+ .app__mt2__race__style {
+    vertical-align: middle;
+    width: 14%;
+    height: 82px;
+    border-radius: 45px;
+    box-shadow: 0px 1px 5px 0px rgba(0,0,0,0.67),inset 0px 0px 0px 1px rgba(255,255,255,0.05);
+}
+
+.app__mt2__race__war_1 {
+    background: url(../images/warm.jpg) center center no-repeat;
+    background-size: cover,contain;
+}
+
+.app__mt2__race__war_2 {
+    background: url(../images/warf.jpg) center center no-repeat;
+    background-size: cover,contain;
+}
+
+.app__mt2__race__ninja_1 {
+    background: url(../images/ninjam.jpg) center center no-repeat;
+    background-size: cover,contain;
+}
+
+.app__mt2__race__ninja_2 {
+    background: url(../images/ninjaf.jpg) center center no-repeat;
+    background-size: cover,contain;
+}
+
+.app__mt2__race__sura_1 {
+    background: url(../images/suram.jpg) center center no-repeat;
+    background-size: cover,contain;
+}
+
+.app__mt2__race__sura_2 {
+    background: url(../images/suraf.jpg) center center no-repeat;
+    background-size: cover,contain;
+}
+
+.app__mt2__race__shaman_1 {
+    background: url(../images/shamanm.jpg) center center no-repeat;
+    background-size: cover,contain;
+}
+
+.app__mt2__race__shaman_2 {
+    background: url(../images/shamanf.jpg) center center no-repeat;
+    background-size: cover,contain;
+}
+
+.app__mt2__reich__style {
+    position: relative;
+    float: left;
+    height: 24px;
+    width: 47px;
+    margin: 8px 10px 8px 0;
+    box-shadow: 0px 1px 5px 0px rgba(0,0,0,0.67),inset 0px 0px 0px 1px rgba(255,255,255,0.05);
+}
+
+.app__mt2__reich__shinso {
+    background: url(../images/shinsoo_flag.png) no-repeat center center;
+    background-size: auto 25px;
+}
+
+.app__mt2__reich__chunjo {
+    background: url(../images/chunjo_flag.png) no-repeat center center;
+    background-size: auto 25px;
+}
+
+.app__mt2__reich__jinno {
+    background: url(../images/jinno_flag.png) no-repeat center center;
+    background-size: auto 25px;
+}
+
+.app__mt2__reich__custom {
+    background-size: cover,contain;
+    width: 28px;
+    height: 19px;
+    margin: 2px 5px 2px 0;
+}
+
+.app__mt2__rank__content {
+    color: #fff;
+    border-bottom: 2px solid #1d1d1d;
+}
+
+.system_category_value {
 	color: #868e96;
 	font-family: 'Merriweather',serif;
 	font-size: 12px;
@@ -2400,6 +2494,7 @@ header .logo a {
 	background: url(../images/bot_cont.jpg) no-repeat;
 	width: 100%;
 	height: 24px;
+	margin-bottom: 2%;
 }
 
 #main_content_top {
@@ -2417,6 +2512,7 @@ header .logo a {
 	background: url(../images/bot_sidebar.jpg) no-repeat;
 	width: 100%;
 	height: 20px;
+	margin-bottom: 2%;
 }
 
 #sidebar_top {
