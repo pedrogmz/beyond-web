@@ -3691,3 +3691,61 @@ footer ul li {
 	background: url(data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTkuMC4wLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeD0iMHB4IiB5PSIwcHgiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCA1MTIgNTEyOyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgd2lkdGg9IjUxMnB4IiBoZWlnaHQ9IjUxMnB4Ij4KPHBhdGggc3R5bGU9ImZpbGw6IzZEQTU0NDsiIGQ9Ik0wLDI1NmMwLDExMC4wNyw2OS40NzIsMjAzLjkwNSwxNjYuOTU1LDI0MC4wNzZsMjIuMjYyLTI0MC4wNzdMMTY2Ljk1NSwxNS45MjMgIEM2OS40NzIsNTIuMDk1LDAsMTQ1LjkyOSwwLDI1NnoiLz4KPHBhdGggc3R5bGU9ImZpbGw6I0Q4MDAyNzsiIGQ9Ik01MTIsMjU2QzUxMiwxMTQuNjE2LDM5Ny4zODQsMCwyNTYsMGMtMzEuMzE0LDAtNjEuMzExLDUuNjMzLTg5LjA0NSwxNS45MjN2NDgwLjE1NCAgQzE5NC42ODksNTA2LjM2OCwyMjQuNjg2LDUxMiwyNTYsNTEyQzM5Ny4zODQsNTEyLDUxMiwzOTcuMzg0LDUxMiwyNTZ6Ii8+CjxjaXJjbGUgc3R5bGU9ImZpbGw6I0ZGREE0NDsiIGN4PSIxNjYuOTU3IiBjeT0iMjU2IiByPSI4OS4wNDMiLz4KPHBhdGggc3R5bGU9ImZpbGw6I0Q4MDAyNzsiIGQ9Ik0xMTYuODcsMjExLjQ3OHY1NS42NTJjMCwyNy42NjIsMjIuNDI0LDUwLjA4Nyw1MC4wODcsNTAuMDg3czUwLjA4Ny0yMi40MjQsNTAuMDg3LTUwLjA4N3YtNTUuNjUyICBIMTE2Ljg3eiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojRjBGMEYwOyIgZD0iTTE2Ni45NTcsMjgzLjgyNmMtOS4yMDYsMC0xNi42OTYtNy40OS0xNi42OTYtMTYuNjk2VjI0NC44N2gzMy4zOTF2MjIuMjYxICBDMTgzLjY1MiwyNzYuMzM2LDE3Ni4xNjIsMjgzLjgyNiwxNjYuOTU3LDI4My44MjZ6Ii8+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+Cjwvc3ZnPgo=) no-repeat 0;
 	background-size: 40px 40px;
 }
+
+.select_price>input[type="radio"] {
+	position: absolute;
+	opacity: 0;
+	z-index: -1;
+}
+
+.select_price>label {
+	z-index: 1;
+	position: relative;
+	display: inline-block;
+	margin-right: 10px;
+	margin-bottom: 10px;
+	padding-left: 30px;
+	padding-right: 10px;
+	line-height: 36px;
+	cursor: pointer;
+}
+
+.select_price>label::before {
+	content: " ";
+	position: absolute;
+	top: 9px;
+	left: 0;
+	display: block;
+	width: 15px;
+	height: 15px;
+	border: 2px solid #ca9020;
+	border-radius: 4px;
+	z-index: 1;
+}
+
+.select_price>input[type="radio"]+label::before {
+	border-radius: 18px;
+}
+
+/* Checked */
+
+.select_price>input[type="radio"]:checked+label {
+	padding-left: 10px;
+	color: #fff;
+}
+
+.select_price>input[type="radio"]:checked+label::before {
+	top: 4px;
+	width: 100%;
+	height: 67%;
+	background: #ca9020;
+	z-index: -1;
+}
+
+/* Transition */
+
+.select_price>label,
+.select_price>label::before {
+	-webkit-transition: 0.25s all ease;
+	transition: 0.25s all ease;
+}

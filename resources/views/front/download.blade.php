@@ -28,10 +28,10 @@
 </tr><tr>
 </tr></tbody></table>
 	<div class="clearfix">
-		<a href="https://mega.nz/#!MJ0HXZpB!0QrLbRmo07XjPlFHN-onmG79cKqbv9jWPeq8Iw5DQVI" target="_blank">
+		<a href="https://mega.nz/#!EYpEzYSb!YN7jNxQXDwKjSTx42ODmdP9mzIVJ1DXOodAqocEmKjE" target="_blank">
 			<div class="app__mt2__main__content__button">MEGA</div>
 		</a>
-		<a href="http://www.mediafire.com/file/hvchsla6t5owj2d/Beyond2_-_Battle_FUN.rar" target="_blank">
+		<a href="http://www.mediafire.com/file/hfzapmzfe1z4bpm/Btmt2%20-Battle%20v2.rar" target="_blank">
 			<div class="app__mt2__main__content__button">MEDIAFIRE</div>
 		</a>
 	</div>

@@ -124,3 +124,28 @@ if(!function_exists('rango'))
 		}
 	}
 }
+
+if (!function_exists('getPaymentMethodsByCountry')) {
+	function getPaymentMethodsByCountry($country)
+	{
+		header('Content-Type: application/json');
+		$query = '?uid=159&mid=302&apikey=5XADJM8POZBFEKQB&cc=' . strtolower($country);
+			//$query = '?uid=94&mid=230&apikey=5XADJM8POZBFEKQB&cc=es';
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, "https://api.e-payouts.com/getData.php" . $query);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+		$result = curl_exec($ch);
+		curl_close($ch);
+		$data = json_decode($result, true);
+		if (!isset($data['data']['modules']['methods'])) {
+			$html = "No hay metodos de pagos disponibles para tu pais";
+		} else {
+			foreach ($data['data']['modules']['methods'] as $key => $value) {
+				$html .= '<button id="activate_button" onclick="nextStep(this);" type="button" name="method" value="' . $key . '">' . $key . '</button>';
+			}
+		}
+		return $html;
+	}
+}

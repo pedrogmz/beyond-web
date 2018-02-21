@@ -5,7 +5,35 @@
 
 	<section id="buycoins">
 		<div class="main_content_background">
-			<a href="https://iframes.recursosmoviles.com/v3/?wmid=2963&cid=39686&m=sms&xf=Tu%20usuario&x=Ingresa%20aqui%20tu%20ID&pcreditcard=500%20Coins,1100%20Coins,1650%20Coins,2200%20Coins,6000%20Coins&pdeposit=500%20Coins,1100%20Coins,1650%20Coins,2200%20Coins,6000%20Coins&ppaypal=500%20Coins,1100%20Coins,1650%20Coins,2200%20Coins&ppaysafecard=500%20Coins,1100%20Coins,1650%20Coins,2200%20Coins,6000%20Coins&psafetypay=1100%20Coins,1650%20Coins,2200%20Coins,6000%20Coins&psafetypaycash=1100%20Coins,1650%20Coins,2200%20Coins,6000%20Coins&ppayvalida=500%20Coins,1100%20Coins,1650%20Coins,2200%20Coins,6000%20Coins"><button class="download-btn">&nbsp; @lang('Comprar con RM')</button></a>
+			<div class="main_board_subtitle_centeralign">Usando e-Payouts</div>
+			<div id="wizard">
+				<h1><div class="main_board_subtitle_centeralign"> Metodo de pago </div></h1>
+				<div class="step-content">
+					<div id="progress_bar" class="progress_bar_stage1"></div>
+					<div class="main_board_regular_text" id="first_step">
+						<h2>Selecciona el metodo con el cual deseas pagar</h2>
+						<p id="payment_methods"><?= getPaymentMethodsByCountry($_SERVER["HTTP_CF_IPCOUNTRY"]) ?></p>
+					</div>
+				</div>
+			
+				<h1><div class="main_board_subtitle_centeralign"> Monto </div></h1>
+				<div class="step-content">
+					<div id="progress_bar" class="progress_bar_stage2"></div>
+					<div class="main_board_regular_text" id="second_step">
+					<h2>Elige el monto de coins a recibir</h2>
+						<p class="select_price"></p>
+					</div>
+				</div>
+
+				<h1><div class="main_board_subtitle_centeralign"> Completar pago </div></h1>
+				<div class="step-content">
+					<div id="progress_bar" class="progress_bar_stage3"></div>
+					<div class="main_board_regular_text">
+						<h2>Completa tu pago con e-Payouts</h2>
+						<p class="epay_content"></p>
+					</div>
+				</div>
+			</div>
 		</div>
 		<div class="main_content_background">
 			@php

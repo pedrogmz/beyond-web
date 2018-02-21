@@ -26,6 +26,7 @@
 		
 		<link rel="stylesheet" href="{{ asset('css/country.css') }}">
 		<link rel="stylesheet" href="{{ asset('css/font-awesome/css/font-awesome.min.css') }}">
+		<link rel="stylesheet" href="{{ asset('packages/stepwizard/css/stepwizard.css') }}">
 		<link rel="stylesheet" href="{{ asset('css/main.css') }}">
 		@yield('css')
 
@@ -250,7 +251,7 @@
 								<span><a href="{{ url('privacy') }}" target="_blank">@lang('strings.hPyC')</a></span>
 							</div>
 							<div class="copyright">
-								<span>© 2017 - Beyond2 Battle - Free to play MMORPG</span>
+								<span>© 2018 - Beyond2 Battle - Free to play MMORPG</span>
 								<span>Designed by <a href="https://www.behance.net/Maivindesi3001" target="_blank">Maivin Design</a></span>
 							</div>
 							<div id="social_networks">
@@ -292,7 +293,10 @@
 	</script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script>
+	<script src="{{ asset('packages/stepwizard/js/stepwizard.js') }}"></script>
 	<script src="{{ asset('js/plugins.js') }}"></script>
+	<script type="text/javascript"> var country = "<?= strtolower($_SERVER["HTTP_CF_IPCOUNTRY"]); ?>"; </script>
+	<script type="text/javascript"> var player = "<?= Auth::user()->login ?>"; </script>
 	<script src="{{ asset('js/main.js') }}"></script>
 	<script>
 		$(function() {
@@ -300,9 +304,11 @@
 				e.preventDefault();
 				$('#logout-form').submit()
 			})
+			$('#wizard').steps({
+				enableAllSteps: false
+			});
 		})
 	</script>
-
 	@yield('scripts')
 
 	</body>
