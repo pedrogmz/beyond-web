@@ -1,2 +1,5 @@
 .env
 vendor/swiftmailer/swiftmailer/lib/classes/Swift/Transport/StreamBuffer.php
+vendor/
+node_modules/
+npm-debug.log

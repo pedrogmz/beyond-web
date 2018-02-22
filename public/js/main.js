@@ -648,6 +648,5 @@ var nextStep = function(element) {
 $("body").on("change", '.select_price input[name*="price"]', function(event) {
 	var price = $(this).val();
 	var method = $('#first_step').find('[name*="method"].selected').val();
-	$('.epay_content').html('<button href="javascript:;" data-fancybox="iframe" data-src="//paymentbox.e-payouts.com?uid=94&mid=230&ucode='+player+'&price='+price+'&pm='+method+'" data-type="iframe" id="activate_button">PAGAR</button>');
-	$("#wizard").steps("next");	
+	$(".epay_content").html('<button href="javascript:;" data-fancybox="iframe" data-src="//paymentbox.e-payouts.com?uid=159&mid=302&ucode=' + player + "&price=" + price + "&pm=" + method + '" data-type="iframe" id="activate_button">PAGAR</button>');
 });
