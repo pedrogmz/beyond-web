@@ -297,7 +297,7 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script>
 	<script src="{{ asset('packages/stepwizard/js/stepwizard.js') }}"></script>
 	<script src="{{ asset('js/plugins.js') }}"></script>
-	<script type="text/javascript"> var country = "<?= strtolower('ES'); ?>"; </script>
+	<script type="text/javascript"> var country = "<?= strtolower($_SERVER["HTTP_CF_IPCOUNTRY"]); ?>"; </script>
 	<script type="text/javascript"> var player = "<?= isset(Auth::user()->login) ? Auth::user()->login : '' ?>"; </script>
 	<script>var base_url =  '<?=url('/')?>';</script>
 	<script src="{{ asset('js/main.js') }}"></script>
