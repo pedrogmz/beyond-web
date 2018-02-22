@@ -31,7 +31,7 @@ class elFinder {
 	 * 
 	 * @var integer
 	 */
-	protected static $ApiRevision = 29;
+	protected static $ApiRevision = 32;
 	
 	/**
 	 * Storages (root dirs)
@@ -46,6 +46,13 @@ class elFinder {
 	 * @var object
 	 */
 	public static $instance = null;
+	
+	/**
+	 * Current request args
+	 *
+	 * @var array
+	 */
+	public static $currentArgs = array();
 	
 	/**
 	 * Network mount drivers
@@ -151,6 +158,10 @@ class elFinder {
 	 * If the session storage mechanism of the system does not allow `UTF-8`
 	 * And it must be `true` option 'base64encodeSessionData' of elFinder
 	 * 
+	 * WARNING: When enabling this option, if saving the data passed from the user directly to the session variable,
+	 * it make vulnerable to the object injection attack, so use it carefully.
+	 * see https://github.com/Studio-42/elFinder/issues/2345
+	 * 
 	 * @var bool
 	 */
 	protected static $base64encodeSessionData = false;
@@ -207,35 +218,36 @@ class elFinder {
 	 * @var array
 	 **/
 	protected $commands = array(
-		'open'      => array('target' => false, 'tree' => false, 'init' => false, 'mimes' => false, 'compare' => false, 'reqid' => false),
-		'ls'        => array('target' => true, 'mimes' => false, 'intersect' => false, 'reqid' => false),
-		'tree'      => array('target' => true, 'reqid' => false),
-		'parents'   => array('target' => true, 'until' => false, 'reqid' => false),
-		'tmb'       => array('targets' => true, 'reqid' => false),
-		'file'      => array('target' => true, 'download' => false, 'reqid' => false),
-		'zipdl'     => array('targets' => true, 'download' => false, 'reqid' => false),
-		'size'      => array('targets' => true, 'reqid' => false),
-		'mkdir'     => array('target' => true, 'name' => false, 'dirs' => false, 'reqid' => false),
-		'mkfile'    => array('target' => true, 'name' => true, 'mimes' => false, 'reqid' => false),
-		'rm'        => array('targets' => true, 'reqid' => false),
-		'rename'    => array('target' => true, 'name' => true, 'mimes' => false, 'reqid' => false),
-		'duplicate' => array('targets' => true, 'suffix' => false, 'reqid' => false),
-		'paste'     => array('dst' => true, 'targets' => true, 'cut' => false, 'mimes' => false, 'renames' => false, 'hashes' => false, 'suffix' => false, 'reqid' => false),
-		'upload'    => array('target' => true, 'FILES' => true, 'mimes' => false, 'html' => false, 'upload' => false, 'name' => false, 'upload_path' => false, 'chunk' => false, 'cid' => false, 'node' => false, 'renames' => false, 'hashes' => false, 'suffix' => false, 'mtime' => false, 'overwrite' => false, 'reqid' => false),
-		'get'       => array('target' => true, 'conv' => false, 'reqid' => false),
-		'put'       => array('target' => true, 'content' => '', 'mimes' => false, 'encoding' => false, 'reqid' => false),
-		'archive'   => array('targets' => true, 'type' => true, 'mimes' => false, 'name' => false, 'reqid' => false),
-		'extract'   => array('target' => true, 'mimes' => false, 'makedir' => false, 'reqid' => false),
-		'search'    => array('q' => true, 'mimes' => false, 'target' => false, 'reqid' => false),
-		'info'      => array('targets' => true, 'compare' => false, 'reqid' => false),
-		'dim'       => array('target' => true, 'reqid' => false),
-		'resize'    => array('target' => true, 'width' => false, 'height' => false, 'mode' => false, 'x' => false, 'y' => false, 'degree' => false, 'quality' => false, 'bg' => false, 'reqid' => false),
-		'netmount'  => array('protocol' => true, 'host' => true, 'path' => false, 'port' => false, 'user' => false, 'pass' => false, 'alias' => false, 'options' => false, 'reqid' => false),
-		'url'       => array('target' => true, 'options' => false, 'reqid' => false),
-		'callback'  => array('node' => true, 'json' => false, 'bind' => false, 'done' => false, 'reqid' => false),
-		'chmod'     => array('targets' => true, 'mode' => true, 'reqid' => false),
-		'subdirs'   => array('targets' => true, 'reqid' => false),
-		'abort'     => array('id' => true, 'reqid' => false)
+		'open'      => array('target' => false, 'tree' => false, 'init' => false, 'mimes' => false, 'compare' => false),
+		'ls'        => array('target' => true, 'mimes' => false, 'intersect' => false),
+		'tree'      => array('target' => true),
+		'parents'   => array('target' => true, 'until' => false),
+		'tmb'       => array('targets' => true),
+		'file'      => array('target' => true, 'download' => false),
+		'zipdl'     => array('targets' => true, 'download' => false),
+		'size'      => array('targets' => true),
+		'mkdir'     => array('target' => true, 'name' => false, 'dirs' => false),
+		'mkfile'    => array('target' => true, 'name' => true, 'mimes' => false),
+		'rm'        => array('targets' => true),
+		'rename'    => array('target' => true, 'name' => true, 'mimes' => false, 'targets' => false, 'q' => false),
+		'duplicate' => array('targets' => true, 'suffix' => false),
+		'paste'     => array('dst' => true, 'targets' => true, 'cut' => false, 'mimes' => false, 'renames' => false, 'hashes' => false, 'suffix' => false),
+		'upload'    => array('target' => true, 'FILES' => true, 'mimes' => false, 'html' => false, 'upload' => false, 'name' => false, 'upload_path' => false, 'chunk' => false, 'cid' => false, 'node' => false, 'renames' => false, 'hashes' => false, 'suffix' => false, 'mtime' => false, 'overwrite' => false),
+		'get'       => array('target' => true, 'conv' => false),
+		'put'       => array('target' => true, 'content' => '', 'mimes' => false, 'encoding' => false),
+		'archive'   => array('targets' => true, 'type' => true, 'mimes' => false, 'name' => false),
+		'extract'   => array('target' => true, 'mimes' => false, 'makedir' => false),
+		'search'    => array('q' => true, 'mimes' => false, 'target' => false),
+		'info'      => array('targets' => true, 'compare' => false),
+		'dim'       => array('target' => true, 'substitute' => false),
+		'resize'    => array('target' => true, 'width' => false, 'height' => false, 'mode' => false, 'x' => false, 'y' => false, 'degree' => false, 'quality' => false, 'bg' => false),
+		'netmount'  => array('protocol' => true, 'host' => true, 'path' => false, 'port' => false, 'user' => false, 'pass' => false, 'alias' => false, 'options' => false),
+		'url'       => array('target' => true, 'options' => false),
+		'callback'  => array('node' => true, 'json' => false, 'bind' => false, 'done' => false),
+		'chmod'     => array('targets' => true, 'mode' => true),
+		'subdirs'   => array('targets' => true),
+		'abort'     => array('id' => true),
+		'editor'    => array('name' => true, 'method' => true, 'args' => false)
 	);
 	
 	/**
@@ -356,7 +368,14 @@ class elFinder {
 	 * @var integer
 	 */
 	protected $itemLockExpire = 3600;
-	
+
+	/**
+	 * Additional request querys
+	 * 
+	 * @var array|null
+	 */
+	protected $customData = null;
+
 	// Errors messages
 	const ERROR_UNKNOWN           = 'errUnknown';
 	const ERROR_UNKNOWN_CMD       = 'errUnknownCmd';
@@ -431,6 +450,12 @@ class elFinder {
 	 * @author Dmitry (dio) Levashov
 	 */
 	public function __construct($opts) {
+		// set default_charset
+		if (version_compare(PHP_VERSION, '5.6', '>=')) {
+			ini_set('internal_encoding', 'UTF-8');
+			ini_set('default_charset', 'UTF-8');
+		}
+		
 		// define accept constant of server commands path
 		! defined('ELFINDER_TAR_PATH')      && define('ELFINDER_TAR_PATH',      'tar');
 		! defined('ELFINDER_GZIP_PATH')     && define('ELFINDER_GZIP_PATH',     'gzip');
@@ -576,9 +601,9 @@ class elFinder {
 		}
 		
 		// setlocale and global locale regists to elFinder::locale
-		self::$locale = !empty($opts['locale']) ? $opts['locale'] : 'en_US.UTF-8';
+		self::$locale = !empty($opts['locale']) ? $opts['locale'] : (substr(PHP_OS, 0, 3) === 'WIN'? 'C' : 'en_US.UTF-8');
 		if (false === setlocale(LC_ALL, self::$locale)) {
-			self::$locale = setlocale(LC_ALL, '');
+			self::$locale = setlocale(LC_ALL, '0');
 		}
 
 		// set defaultMimefile
@@ -811,7 +836,13 @@ class elFinder {
 	 * @author Dmitry (dio) Levashov
 	 **/
 	public function commandArgsList($cmd) {
-		return $this->commandExists($cmd) ? $this->commands[$cmd] : array();
+		if ($this->commandExists($cmd)) {
+			$list = $this->commands[$cmd];
+			$list['reqid'] = false;
+		} else {
+			$list = array();
+		}
+		return $list;
 	}
 
 	private function session_expires() {
@@ -841,6 +872,9 @@ class elFinder {
 		// set error handler of WARNING, NOTICE
 		set_error_handler('elFinder::phpErrorHandler', E_WARNING | E_NOTICE | E_USER_WARNING | E_USER_NOTICE);
 		
+		// set current request args
+		self::$currentArgs = $args;
+		
 		if (!$this->loaded) {
 			return array('error' => $this->error(self::ERROR_CONF, self::ERROR_CONF_NO_VOL));
 		}
@@ -853,6 +887,9 @@ class elFinder {
 			return array('error' => $this->error(self::ERROR_UNKNOWN_CMD));
 		}
 		
+		// check request id
+		$args['reqid'] = preg_replace('[^0-9a-fA-F]', '', ! empty($args['reqid'])? $args['reqid'] : (! empty($_SERVER['HTTP_X_ELFINDERREQID'])? $_SERVER['HTTP_X_ELFINDERREQID'] : ''));
+		
 		// to abort this request
 		if ($cmd === 'abort') {
 			$this->abort($args);
@@ -860,7 +897,7 @@ class elFinder {
 		}
 		
 		// make flag file and set self::$abortCheckFile
-		if (! empty($args['reqid'])) {
+		if ($args['reqid']) {
 			$this->abort(array('makeFile' => $args['reqid']));
 		}
 		
@@ -1038,6 +1075,11 @@ class elFinder {
 		// remove self::$abortCheckFile
 		$this->abort();
 		
+		// custom data
+		if ($this->customData !== null) {
+			$result['customData'] = $this->customData? json_encode($this->customData) : '';
+		}
+
 		if (!empty($result['callback'])) {
 			$result['callback']['json'] = json_encode($result);
 			$this->callback($result['callback']);
@@ -1061,6 +1103,37 @@ class elFinder {
 	}
 	
 	/**
+	 * Sets custom data(s).
+	 *
+	 * @param  string|array  $key    The key or data array
+	 * @param  mixed         $val    The value
+	 * 
+	 * @return self    ( elFinder instance )
+	 */
+	public function setCustomData($key, $val = null) {
+		if (is_array($key)) {
+			foreach($key as $k => $v) {
+				$this->customData[$k] = $v;
+			}
+		} else {
+			$this->customData[$key] = $val;
+		}
+		return $this;
+	}
+
+	/**
+	 * Removes a custom data.
+	 *
+	 * @param  string  $key    The key
+	 * 
+	 * @return self    ( elFinder instance )
+	 */
+	public function removeCustomData($key) {
+		$this->customData[$key] = null;
+		return $this;
+	}
+
+	/**
 	 * Update sesstion value of a NetVolume option
 	 * 
 	 * @param string $netKey
@@ -1071,7 +1144,6 @@ class elFinder {
 		$netVolumes = $this->getNetVolumes();
 		if (is_string($netKey) && isset($netVolumes[$netKey]) && is_string($optionKey)) {
 			$netVolumes[$netKey][$optionKey] = $val;
-			$this->saveNetVolumes($netVolumes);
 		}
 	}
 	
@@ -1451,7 +1523,7 @@ class elFinder {
 		$targets = $args['targets'];
 		
 		foreach ($targets as $target) {
-			elFinder::extendTimeLimit();
+			elFinder::checkAborted();
 			
 			if (($volume = $this->volume($target)) != false
 			&& (($tmb = $volume->tmb($target)) != false)) {
@@ -1558,8 +1630,9 @@ class elFinder {
 	protected function file($args) {
 		$target   = $args['target'];
 		$download = !empty($args['download']);
-		$h403     = 'HTTP/1.x 403 Access Denied';
-		$h404     = 'HTTP/1.x 404 Not Found';
+		$h403     = 'HTTP/1.0 403 Access Denied';
+		$h404     = 'HTTP/1.0 404 Not Found';
+		$h304     = 'HTTP/1.1 304 Not Modified';
 
 		if (($volume = $this->volume($target)) == false) { 
 			return array('error' => 'File not found', 'header' => $h404, 'raw' => true);
@@ -1621,6 +1694,7 @@ class elFinder {
 				'Content-Disposition: '.$disp.'; '.$filename,
 				'Content-Transfer-Encoding: binary',
 				'Content-Length: '.$file['size'],
+				'Last-Modified: '.gmdate('D, d M Y H:i:s T', $file['ts']),
 				'Connection: close'
 			)
 		);
@@ -1671,8 +1745,10 @@ class elFinder {
 		$files = 0;
 		$dirs = 0;
 		$itemCount = true;
+		$sizes = array();
 		
 		foreach ($args['targets'] as $target) {
+			elFinder::checkAborted();
 			if (($volume = $this->volume($target)) == false
 			|| ($file = $volume->file($target)) == false
 			|| !$file['read']) {
@@ -1681,24 +1757,29 @@ class elFinder {
 			
 			$volRes = $volume->size($target);
 			if (is_array($volRes)) {
+				$sizeInfo = array('size' => 0, 'fileCnt' => 0, 'dirCnt' => 0);
 				if (! empty($volRes['size'])) {
+					$sizeInfo['size'] = $volRes['size'];
 					$size += $volRes['size'];
 				}
-				if ($itemCount) {
-					if (! empty($volRes['files'])) {
-						$files += $volRes['files'];
-					}
-					if (! empty($volRes['dirs'])) {
-						$dirs += $volRes['dirs'];
-					}
+				if (! empty($volRes['files'])) {
+					$sizeInfo['fileCnt'] = $volRes['files'];
 				}
+				if (! empty($volRes['dirs'])) {
+					$sizeInfo['dirCnt'] = $volRes['dirs'];
+				}
+				if ($itemCount) {
+					$files += $sizeInfo['fileCnt'];
+					$dirs += $sizeInfo['dirCnt'];
+				}
+				$sizes[$target] = $sizeInfo;
 			} else if (is_numeric($volRes)) {
 				$size += $volRes;
 				$files = $dirs = 'unknown';
 				$itemCount = false;
 			}
 		}
-		return array('size' => $size, 'fileCnt' => $files, 'dirCnt' => $dirs);
+		return array('size' => $size, 'fileCnt' => $files, 'dirCnt' => $dirs, 'sizes' => $sizes);
 	}
 	
 	/**
@@ -1772,29 +1853,144 @@ class elFinder {
 	}
 	
 	/**
-	 * Rename file
+	 * Rename file, Accept multiple items >= API 2.1031
 	 *
 	 * @param  array  $args
 	 * @return array
 	 * @author Dmitry (dio) Levashov
+	 * @author Naoki Sawada
 	 **/
 	protected function rename($args) {
 		$target = $args['target'];
-		$name   = $args['name'];
+		$name = $args['name'];
+		$query = (strpos($args['q'], '*') !== false)? $args['q'] : '';
+		$targets = $args['targets'];
+		$rms = array();
+		$notfounds = array();
+		$locked = array();
+		$errs = array();
+		$files = array();
+		$removed = array();
+		$res = array();
+		$type = 'normal';
 		
-		if (($volume = $this->volume($target)) == false
-		||  ($rm = $volume->file($target)) == false) {
+		if (!($volume = $this->volume($target))) {
 			return array('error' => $this->error(self::ERROR_RENAME, '#'.$target, self::ERROR_FILE_NOT_FOUND));
 		}
-		$rm['realpath'] = $volume->realpath($target);
 		
-		if ($this->itemLocked($target)) {
-			return array('error' => $this->error(self::ERROR_LOCKED, $rm['name']));
+		if ($targets) {
+			array_unshift($targets, $target);
+			foreach($targets as $h) {
+				if ($rm = $volume->file($h)) {
+					if ($this->itemLocked($h)) {
+						$locked[] = $rm['name'];
+					} else {
+						$rm['realpath'] = $volume->realpath($h);
+						$rms[] = $rm;
+					}
+				} else {
+					$notfounds[] = '#'.$h;
+				}
+			}
+			if (!$rms) {
+				$res['error'] = array();
+				if ($notfounds) {
+					$res['error'] = array(self::ERROR_RENAME, join(', ', $notfounds), self::ERROR_FILE_NOT_FOUND);
+				}
+				if ($locked) {
+					array_push($res['error'], self::ERROR_LOCKED, join(', ',$locked));
+				}
+				return $res;
+			}
+			
+			$res['warning'] = array();
+			if ($notfounds) {
+				array_push($res['warning'], self::ERROR_RENAME, join(', ', $notfounds), self::ERROR_FILE_NOT_FOUND);
+			}
+			if ($locked) {
+				array_push($res['warning'], self::ERROR_LOCKED, join(', ',$locked));
+			}
+			
+			if ($query) {
+				// batch rename
+				$splits = elFinder::splitFileExtention($query);
+				if ($splits[1] && $splits[0] === '*') {
+					$type = 'extention';
+					$name = $splits[1];
+				} else if (strlen($splits[0]) > 1) {
+					if (substr($splits[0], -1) === '*') {
+						$type = 'prefix';
+						$name = substr($splits[0], 0 ,strlen($splits[0]) - 1);
+					} else if (substr($splits[0], 0, 1) === '*') {
+						$type = 'suffix';
+						$name = substr($splits[0], 1);
+					}
+				}
+				if ($type !== 'normal') {
+					if (!empty($this->listeners['rename.pre'])) {
+						$_args = array('name' => $name);
+						foreach ($this->listeners['rename.pre'] as $handler) {
+							$_res = call_user_func_array($handler, array('rename', &$_args, $this, $volume));
+							if (! empty($_res['preventexec'])) {
+								break;
+							}
+						}
+						$name = $_args['name'];
+					}
+				}
+			}
+			foreach($rms as $rm) {
+				if ($type === 'normal') {
+					$rname = $volume->uniqueName($volume->realpath($rm['phash']), $name, '', false);
+				} else {
+					if ($type === 'extention') {
+						$splits = elFinder::splitFileExtention($rm['name']);
+						$rname = $splits[0] . '.' . $name;
+					} else if ($type === 'prefix') {
+						$rname = $name . $rm['name'];
+					} else if ($type === 'suffix') {
+						$splits = elFinder::splitFileExtention($rm['name']);
+						$rname = $splits[0]. $name . ($splits[1]? ('.' . $splits[1]) : '');
+					}
+					$rname = $volume->uniqueName($volume->realpath($rm['phash']), $rname, '', true);
+				}
+				if ($file = $volume->rename($rm['hash'], $rname)) {
+					$files[] = $file;
+					$removed[] = $rm;
+				} else {
+					$errs[] = $rm['name'];
+				}
+			}
+			
+			if (!$files) {
+				$res['error'] = $this->error(self::ERROR_RENAME, join(', ', $errs), $volume->error());
+				if (!$res['warning']) {
+					unset($res['warning']);
+				}
+				return $res;
+			}
+			if ($errs) {
+				array_push($res['warning'], self::ERROR_RENAME, join(', ', $errs), $volume->error());
+			}
+			if (!$res['warning']) {
+				unset($res['warning']);
+			}
+			$res['added'] = $files;
+			$res['removed'] = $removed;
+			return $res;
+		} else {
+			if (!($rm = $volume->file($target))) {
+				return array('error' => $this->error(self::ERROR_RENAME, '#'.$target, self::ERROR_FILE_NOT_FOUND));
+			}
+			if ($this->itemLocked($target)) {
+				return array('error' => $this->error(self::ERROR_LOCKED, $rm['name']));
+			}
+			$rm['realpath'] = $volume->realpath($target);
+			
+			return ($file = $volume->rename($target, $name)) == false
+				? array('error' => $this->error(self::ERROR_RENAME, $rm['name'], $volume->error()))
+				: array('added' => array($file), 'removed' => array($rm));
 		}
-		
-		return ($file = $volume->rename($target, $name)) == false
-			? array('error' => $this->error(self::ERROR_RENAME, $rm['name'], $volume->error()))
-			: array('added' => array($file), 'removed' => array($rm));
 	}
 	
 	/**
@@ -1812,7 +2008,7 @@ class elFinder {
 		$this->itemLock($targets);
 		
 		foreach ($targets as $target) {
-			elFinder::extendTimeLimit();
+			elFinder::checkAborted();
 			
 			if (($volume = $this->volume($target)) == false
 			|| ($src = $volume->file($target)) == false) {
@@ -1843,7 +2039,7 @@ class elFinder {
 		$result  = array('removed' => array());
 		
 		foreach ($targets as $target) {
-			elFinder::extendTimeLimit();
+			elFinder::checkAborted();
 			
 			if (($volume = $this->volume($target)) == false) {
 				$result['warning'] = $this->error(self::ERROR_RM, '#'.$target, self::ERROR_FILE_NOT_FOUND);
@@ -1886,13 +2082,47 @@ class elFinder {
 	}
 
 	/**
+	 * Gateway for custom contents editor
+	 * 
+	 * @param  array $args command arguments
+	 * @return array
+	 * @author Naoki Sawada
+	 */
+	protected function editor($args = array()) {
+		$name = $args['name'];
+		if (is_array($name)) {
+			$res = array();
+			foreach($name as $c) {
+				$class = 'elFinderEditor' . $c;
+				if (class_exists($class)) {
+					$editor = new $class($this, $args['args']);
+					$res[$c] = $editor->enabled();
+				} else {
+					$res[$c] = 0;
+				}
+			}
+			return $res;
+		} else {
+			$class = 'elFinderEditor' . $name;
+			if (class_exists($class)) {
+				$editor = new $class($this, $args['args']);
+				$method = $args['method'];
+				if ($editor->isAllowedMethod($method) && method_exists($editor, $method)) {
+					return $editor->$method();
+				}
+			}
+			return array('error', $this->error(self::ERROR_UNKNOWN_CMD, 'editor.'.$name.'.'.$method));
+		}
+	}
+
+	/**
 	 * Abort current request and make flag file to running check
 	 * 
 	 * @param array $args
 	 * @return void
 	 */
 	protected function abort($args = array()) {
-		if (! elFinder::$connectionFlagsPath) {
+		if (! elFinder::$connectionFlagsPath || $_SERVER['REQUEST_METHOD'] === 'HEAD') {
 			return;
 		}
 		$flagFile = elFinder::$connectionFlagsPath . DIRECTORY_SEPARATOR . 'elfreq%s';
@@ -1974,7 +2204,6 @@ class elFinder {
 	 * @author Naoki Sawada
 	 */
 	protected function fsock_get_contents( &$url, $timeout, $redirect_max, $ua, $outfp ) {
-
 		$connect_timeout = 3;
 		$connect_try = 3;
 		$method = 'GET';
@@ -1996,9 +2225,10 @@ class elFinder {
 		// query
 		$arr['query'] = isset($arr['query']) ? '?'.$arr['query'] : '';
 		// port
-		$arr['port'] = isset($arr['port']) ? $arr['port'] : ($ssl? 443 : 80);
+		$port = isset($arr['port']) ? $arr['port'] : '';
+		$arr['port'] = $port? $port : ($ssl? 443 : 80);
 		
-		$url_base = $arr['scheme'].'://'.$arr['host'].':'.$arr['port'];
+		$url_base = $arr['scheme'].'://'.$arr['host'].($port? (':'.$port) : '');
 		$url_path = isset($arr['path']) ? $arr['path'] : '/';
 		$uri = $url_path.$arr['query'];
 		
@@ -2074,10 +2304,11 @@ class elFinder {
 						// add sheme,host
 						$url = $url_base.$url;
 					}
-					if ($_url !== $url) {
-						fclose($fp);
-						return $this->fsock_get_contents( $url, $timeout, $redirect_max, $ua, $outfp );
+					if ($_url === $url) {
+						sleep(1);
 					}
+					fclose($fp);
+					return $this->fsock_get_contents( $url, $timeout, $redirect_max, $ua, $outfp );
 				}
 				break;
 			case 200:
@@ -2124,24 +2355,35 @@ class elFinder {
 	 * @return array
 	 * @author Naoki Sawada
 	 */
-	protected function parse_data_scheme( $str, $extTable, $args = null) {
+	protected function parse_data_scheme($str, $extTable, $args = null) {
 		$data = $name = '';
+		// Scheme 'data://' require `allow_url_fopen` and `allow_url_include`
 		if ($fp = fopen('data://'.substr($str, 5), 'rb')) {
 			if ($data = stream_get_contents($fp)) {
 				$meta = stream_get_meta_data($fp);
-				$ext = isset($extTable[$meta['mediatype']])? '.' . $extTable[$meta['mediatype']] : '';
-				// Set name if name eq 'image.png' and $args has 'name' array, e.g. clipboard data
-				if (is_array($args['name']) && isset($args['name'][0])) {
-					$name = $args['name'][0];
-					if ($ext) {
-						$name = preg_replace('/\.[^.]*$/', '', $name);
-					}
-				} else {
-					$name = substr(md5($data), 0, 8);
-				}
-				$name .= $ext;
+				$mime = $meta['mediatype'];
 			}
 			fclose($fp);
+		} else if (preg_match('~^data:(.+?/.+?)?(?:;charset=.+?)?;base64,~', substr($str, 0, 128), $m)) {
+			$data = base64_decode(substr($str, strlen($m[0])));
+			if ($m[1]) {
+				$mime = $m[1];
+			}
+		}
+		if ($data) {
+			$ext = ($mime && isset($extTable[$mime]))? '.' . $extTable[$mime] : '';
+			// Set name if name eq 'image.png' and $args has 'name' array, e.g. clipboard data
+			if (is_array($args['name']) && isset($args['name'][0])) {
+				$name = $args['name'][0];
+				if ($ext) {
+					$name = preg_replace('/\.[^.]*$/', '', $name);
+				}
+			} else {
+				$name = substr(md5($data), 0, 8);
+			}
+			$name .= $ext;
+		} else {
+			$data = $name = '';
 		}
 		return array($data, $name);
 	}
@@ -2281,7 +2523,7 @@ class elFinder {
 		$files = array();
 		$errors = array();
 		foreach($targets as $target) {
-			elFinder::extendTimeLimit();
+			elFinder::checkAborted();
 			
 			$file = $volume->chmod($target, $mode);
 			if ($file) {
@@ -2385,7 +2627,7 @@ class elFinder {
 				
 				try {
 					// to check connection is aborted
-					elFinder::extendTimeLimit();
+					elFinder::checkAborted();
 				} catch (elFinderAbortException $e) {
 					unlink($tmpname);
 					is_file($tmp) && unlink($tmp);
@@ -2530,7 +2772,7 @@ class elFinder {
 						$fp = fopen($tmpfname, 'wb');
 						$data = $this->get_remote_contents($url, 30, 5, 'Mozilla/5.0', $fp);
 						// to check connection is aborted
-						elFinder::extendTimeLimit();
+						elFinder::checkAborted();
 						$_name = preg_replace('~^.*?([^/#?]+)(?:\?.*)?(?:#.*)?$~', '$1', rawurldecode($url));
 						// Check `Content-Disposition` response header
 						if ($data && ($headers = get_headers($url, true)) && !empty($headers['Content-Disposition'])) {
@@ -2757,7 +2999,7 @@ class elFinder {
 		}
 		
 		foreach ($targets as $target) {
-			elFinder::extendTimeLimit();
+			elFinder::checkAborted();
 			
 			if (($srcVolume = $this->volume($target)) == false) {
 				$result['warning'] = array_merge($result['warning'], $this->error($error, '#'.$target, self::ERROR_FILE_NOT_FOUND));
@@ -2965,6 +3207,17 @@ class elFinder {
 			}
 			$encoding = '';
 			$args['content'] = "\0" . $args['content'];
+		} else if ($encoding === 'hash') {
+			$_hash = $args['content'];
+			if ($_src = $this->getVolume($_hash)) {
+				if ($_file = $_src->file($_hash)) {
+					if ($_data = $_src->getContents($_hash)) {
+						$args['content'] = 'data:'.$file['mime'].';base64,'.base64_encode($_data);
+					}
+				}
+			}
+			$encoding = '';
+			$args['content'] = "\0" . $args['content'];
 		}
 		if ($encoding) {
 			$content = iconv('UTF-8', $encoding, $args['content']);
@@ -3118,6 +3371,7 @@ class elFinder {
 			}
 		} else {
 			foreach ($args['targets'] as $hash) {
+				elFinder::checkAborted();
 				if (($volume = $this->volume($hash)) != false
 				&& ($info = $volume->file($hash)) != false) {
 					$info['path'] = $volume->path($hash);
@@ -3141,13 +3395,23 @@ class elFinder {
 	 * @author Dmitry (dio) Levashov
 	 **/
 	protected function dim($args) {
+		$res = array();
 		$target = $args['target'];
 		
 		if (($volume = $this->volume($target)) != false) {
-			$dim = $volume->dimensions($target);
-			return $dim ? array('dim' => $dim) : array();
+			if ($dim = $volume->dimensions($target, $args)) {
+				if (is_array($dim) && isset($dim['dim'])) {
+					$res = $dim;
+				} else {
+					$res = array('dim' => $dim);
+					if ($subImgLink = $volume->getSubstituteImgLink($target, explode('x', $dim))) {
+						$res['url'] = $subImgLink;
+					}
+				}
+			}
 		}
-		return array();
+		
+		return $res;
 	}
 	
 	/**
@@ -3178,7 +3442,7 @@ class elFinder {
 			return array('error' => $this->error(self::ERROR_RESIZESIZE));
 		}
 		return ($file = $volume->resize($target, $width, $height, $x, $y, $mode, $bg, $degree, $quality))
-			? array('changed' => array($file))
+			? (!empty($file['losslessRotate'])? $file : array('changed' => array($file)))
 			: array('error' => $this->error(self::ERROR_RESIZE, $volume->path($target), $volume->error()));
 	}
 	
@@ -3609,6 +3873,9 @@ class elFinder {
 			$c2 = fread($fp,2);
 			if (bin2hex($c2) == "f904") {
 				$imgcnt++;
+				if ($imgcnt === 2) {
+					break;
+				}
 			}
 	
 			if (feof($fp)) {
@@ -3765,6 +4032,16 @@ class elFinder {
 		} else {
 			throw new elFinderAbortException();
 		}
+	}
+	
+	/**
+	 * Check connection is aborted
+	 * Script stop immediately if connection aborted
+	 *
+	 * @return void
+	 */
+	public static function checkAborted() {
+		elFinder::extendTimeLimit();
 	}
 	
 	/**
@@ -3973,6 +4250,20 @@ class elFinder {
 			}
 		}
 		return false;
+	}
+	
+	/**
+	 * Return array ["name without extention", "extention"] by filename
+	 * 
+	 * @param string $name
+	 * @return array
+	 */
+	public static function splitFileExtention($name) {
+		if (preg_match('/^(.+?)?\.((?:tar\.(?:gz|bz|bz2|z|lzo))|cpio\.gz|ps\.gz|xcf\.(?:gz|bz2)|[a-z0-9]{1,4})$/i', $name, $m)) {
+			return array((string)$m[1], $m[2]);
+		} else {
+			return array($name, '');
+		}
 	}
 	
 	/***************************************************************************/

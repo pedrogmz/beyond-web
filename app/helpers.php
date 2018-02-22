@@ -139,6 +139,7 @@ if (!function_exists('getPaymentMethodsByCountry')) {
 		$result = curl_exec($ch);
 		curl_close($ch);
 		$data = json_decode($result, true);
+		$html = '';
 		if (!isset($data['data']['modules']['methods'])) {
 			$html = "No hay metodos de pagos disponibles para tu pais";
 		} else {

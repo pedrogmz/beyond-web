@@ -13,9 +13,11 @@ class ExpressCheckout
     use PayPalAPIRequest, PayPalTransactions, RecurringProfiles;
 
     /**
-     * PayPal Processor Constructor.
+     * ExpressCheckout constructor.
      *
      * @param array $config
+     *
+     * @throws \Exception
      */
     public function __construct(array $config = [])
     {
@@ -84,10 +86,34 @@ class ExpressCheckout
     protected function setExpressCheckoutRecurringPaymentConfig($data, $subscription = false)
     {
         $this->post = $this->post->merge([
-            'L_BILLINGTYPE0'                    => ($subscription) ? 'RecurringPayments' : 'MerchantInitiatedBilling',
-            'L_BILLINGAGREEMENTDESCRIPTION0'    => !empty($data['subscription_desc']) ?
+            'L_BILLINGTYPE0'                 => ($subscription) ? 'RecurringPayments' : 'MerchantInitiatedBilling',
+            'L_BILLINGAGREEMENTDESCRIPTION0' => !empty($data['subscription_desc']) ?
                 $data['subscription_desc'] : $data['invoice_description'],
         ]);
+    }
+
+    /**
+     * Set item subtotal if available.
+     *
+     * @param array $data
+     */
+    protected function setItemSubTotal($data)
+    {
+        $this->subtotal = isset($data['subtotal']) ? $data['subtotal'] : $data['total'];
+    }
+
+    /**
+     * Set shipping amount if available.
+     *
+     * @param array $data
+     */
+    protected function setShippingAmount($data)
+    {
+        if (isset($data['shipping'])) {
+            $this->post = $this->post->merge([
+                'PAYMENTREQUEST_0_SHIPPINGAMT' => $data['shipping'],
+            ]);
+        }
     }
 
     /**
@@ -96,22 +122,28 @@ class ExpressCheckout
      * @param array $data
      * @param bool  $subscription
      *
-     * @return array
+     * @throws \Exception
+     *
+     * @return array|\Psr\Http\Message\StreamInterface
      */
     public function setExpressCheckout($data, $subscription = false)
     {
+        $this->setItemSubTotal($data);
+
         $this->post = $this->setCartItems($data['items'])->merge([
-            'PAYMENTREQUEST_0_ITEMAMT'          => $data['total'],
-            'PAYMENTREQUEST_0_AMT'              => $data['total'],
-            'PAYMENTREQUEST_0_PAYMENTACTION'    => $this->paymentAction,
-            'PAYMENTREQUEST_0_CURRENCYCODE'     => $this->currency,
-            'PAYMENTREQUEST_0_DESC'             => $data['invoice_description'],
-            'PAYMENTREQUEST_0_INVNUM'           => $data['invoice_id'],
-            'NOSHIPPING'                        => 1,
-            'RETURNURL'                         => $data['return_url'],
-            'CANCELURL'                         => $data['cancel_url'],
-            'LOCALE'                            => $this->locale,
+            'PAYMENTREQUEST_0_ITEMAMT'       => $this->subtotal,
+            'PAYMENTREQUEST_0_AMT'           => $data['total'],
+            'PAYMENTREQUEST_0_PAYMENTACTION' => $this->paymentAction,
+            'PAYMENTREQUEST_0_CURRENCYCODE'  => $this->currency,
+            'PAYMENTREQUEST_0_DESC'          => $data['invoice_description'],
+            'PAYMENTREQUEST_0_INVNUM'        => $data['invoice_id'],
+            'NOSHIPPING'                     => 1,
+            'RETURNURL'                      => $data['return_url'],
+            'CANCELURL'                      => $data['cancel_url'],
+            'LOCALE'                         => $this->locale,
         ]);
+
+        $this->setShippingAmount($data);
 
         $this->setExpressCheckoutRecurringPaymentConfig($data, $subscription);
 
@@ -127,7 +159,9 @@ class ExpressCheckout
      *
      * @param string $token
      *
-     * @return array
+     * @throws \Exception
+     *
+     * @return array|\Psr\Http\Message\StreamInterface
      */
     public function getExpressCheckoutDetails($token)
     {
@@ -145,20 +179,22 @@ class ExpressCheckout
      * @param string $token
      * @param string $payerid
      *
-     * @return array
+     * @throws \Exception
+     *
+     * @return array|\Psr\Http\Message\StreamInterface
      */
     public function doExpressCheckoutPayment($data, $token, $payerid)
     {
         $this->post = $this->setCartItems($data['items'])->merge([
-            'TOKEN'                             => $token,
-            'PAYERID'                           => $payerid,
-            'PAYMENTREQUEST_0_ITEMAMT'          => $data['total'],
-            'PAYMENTREQUEST_0_AMT'              => $data['total'],
-            'PAYMENTREQUEST_0_PAYMENTACTION'    => !empty($this->config['payment_action']) ? $this->config['payment_action'] : 'Sale',
-            'PAYMENTREQUEST_0_CURRENCYCODE'     => $this->currency,
-            'PAYMENTREQUEST_0_DESC'             => $data['invoice_description'],
-            'PAYMENTREQUEST_0_INVNUM'           => $data['invoice_id'],
-            'PAYMENTREQUEST_0_NOTIFYURL'        => $this->notifyUrl,
+            'TOKEN'                          => $token,
+            'PAYERID'                        => $payerid,
+            'PAYMENTREQUEST_0_ITEMAMT'       => $data['total'],
+            'PAYMENTREQUEST_0_AMT'           => $data['total'],
+            'PAYMENTREQUEST_0_PAYMENTACTION' => !empty($this->config['payment_action']) ? $this->config['payment_action'] : 'Sale',
+            'PAYMENTREQUEST_0_CURRENCYCODE'  => $this->currency,
+            'PAYMENTREQUEST_0_DESC'          => $data['invoice_description'],
+            'PAYMENTREQUEST_0_INVNUM'        => $data['invoice_id'],
+            'PAYMENTREQUEST_0_NOTIFYURL'     => $this->notifyUrl,
         ]);
 
         return $this->doPayPalRequest('DoExpressCheckoutPayment');
@@ -171,7 +207,9 @@ class ExpressCheckout
      * @param float  $amount           Amount to capture
      * @param array  $data             Optional request fields
      *
-     * @return array
+     * @throws \Exception
+     *
+     * @return array|\Psr\Http\Message\StreamInterface
      */
     public function doAuthorization($authorization_id, $amount, $data = [])
     {
@@ -193,7 +231,9 @@ class ExpressCheckout
      * @param string $complete         Indicates whether or not this is the last capture.
      * @param array  $data             Optional request fields
      *
-     * @return array
+     * @throws \Exception
+     *
+     * @return array|\Psr\Http\Message\StreamInterface
      */
     public function doCapture($authorization_id, $amount, $complete = 'Complete', $data = [])
     {
@@ -216,14 +256,16 @@ class ExpressCheckout
      * @param float  $amount
      * @param array  $data
      *
-     * @return array
+     * @throws \Exception
+     *
+     * @return array|\Psr\Http\Message\StreamInterface
      */
     public function doReAuthorization($authorization_id, $amount, $data = [])
     {
         $this->setRequestData(
             array_merge($data, [
-                'AUTHORIZATIONID'   => $authorization_id,
-                'AMOUNT'            => $amount,
+                'AUTHORIZATIONID' => $authorization_id,
+                'AMOUNT'          => $amount,
             ])
         );
 
@@ -236,7 +278,9 @@ class ExpressCheckout
      * @param string $authorization_id Transaction ID
      * @param array  $data             Optional request fields
      *
-     * @return array
+     * @throws \Exception
+     *
+     * @return array|\Psr\Http\Message\StreamInterface
      */
     public function doVoid($authorization_id, $data = [])
     {
@@ -254,7 +298,9 @@ class ExpressCheckout
      *
      * @param string $token
      *
-     * @return array
+     * @throws \Exception
+     *
+     * @return array|\Psr\Http\Message\StreamInterface
      */
     public function createBillingAgreement($token)
     {
@@ -271,7 +317,9 @@ class ExpressCheckout
      * @param array  $data
      * @param string $token
      *
-     * @return array
+     * @throws \Exception
+     *
+     * @return array|\Psr\Http\Message\StreamInterface
      */
     public function createRecurringPaymentsProfile($data, $token)
     {
@@ -287,7 +335,9 @@ class ExpressCheckout
      *
      * @param string $id
      *
-     * @return array
+     * @throws \Exception
+     *
+     * @return array|\Psr\Http\Message\StreamInterface
      */
     public function getRecurringPaymentsProfileDetails($id)
     {
@@ -304,7 +354,9 @@ class ExpressCheckout
      * @param array  $data
      * @param string $id
      *
-     * @return array
+     * @throws \Exception
+     *
+     * @return array|\Psr\Http\Message\StreamInterface
      */
     public function updateRecurringPaymentsProfile($data, $id)
     {
@@ -320,6 +372,8 @@ class ExpressCheckout
      *
      * @param string $id
      * @param string $status
+     *
+     * @throws \Exception
      *
      * @return array|\Psr\Http\Message\StreamInterface
      */
@@ -338,7 +392,9 @@ class ExpressCheckout
      *
      * @param string $id
      *
-     * @return array
+     * @throws \Exception
+     *
+     * @return array|\Psr\Http\Message\StreamInterface
      */
     public function cancelRecurringPaymentsProfile($id)
     {
@@ -350,7 +406,9 @@ class ExpressCheckout
      *
      * @param string $id
      *
-     * @return array
+     * @throws \Exception
+     *
+     * @return array|\Psr\Http\Message\StreamInterface
      */
     public function suspendRecurringPaymentsProfile($id)
     {
@@ -362,7 +420,9 @@ class ExpressCheckout
      *
      * @param string $id
      *
-     * @return array
+     * @throws \Exception
+     *
+     * @return array|\Psr\Http\Message\StreamInterface
      */
     public function reactivateRecurringPaymentsProfile($id)
     {

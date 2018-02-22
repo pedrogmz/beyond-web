@@ -31,6 +31,8 @@ Route::name('debug')->get('/user/debug/{id}', 'Character@debug');
 
 Route::name('ranking')->get('/ranking', 'Character@FullRanking');
 
+Route::name('epay')->get('epay/{any}', 'Itemshop@epay');
+
 // Contact
 //Route::resource('contacts', 'Front\ContactController', ['only' => ['create', 'store']]);
 

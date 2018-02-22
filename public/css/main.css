@@ -85,7 +85,7 @@ body {
  * ------------------------------------------------------------------- */
 h1, h2, h3, h4, h5, h6, .h01, .h02, .h03, .h04, .h05, .h06 {
 	font-family: 'Merriweather', serif !important;
-	color: #151515;
+	color: #ffffff;
 	font-style: normal;
 	text-rendering: optimizeLegibility;
 	margin-bottom: 2.1rem;
@@ -621,7 +621,7 @@ label,
 legend {
 	font-size: 1.4rem;
 	margin-bottom: .6rem;
-	color: black;
+	color: white;
 	display: block;
 }
 
@@ -3748,4 +3748,66 @@ footer ul li {
 .select_price>label::before {
 	-webkit-transition: 0.25s all ease;
 	transition: 0.25s all ease;
+}
+
+.main_board_subtitle_centeralign {
+	color: #ca9020;
+	font-family: "Merriweather", serif;
+	font-size: 14px;
+	letter-spacing: 0.4;
+	margin-bottom: 15px;
+	text-align: center;
+}
+
+#progress_bar {
+	width: 374px;
+	height: 2px;
+	background-position: center;
+	background-repeat: no-repeat;
+	margin-top: 5px;
+	margin-bottom: 30px;
+}
+
+#progress_bar.progress_bar_stage1 {
+	background-image: url("../images/register_progress_1.png");
+}
+
+#progress_bar.progress_bar_stage2 {
+	background-image: url("../images/register_progress_2.png");
+}
+
+#progress_bar.progress_bar_stage3 {
+	background-image: url("../images/register_progress_3.png");
+}
+
+#activate_button {
+	width: 190px;
+	height: 47px;
+	background-position: 0px center;
+	background-repeat: no-repeat;
+	font-family: "Merriweather", serif;
+	letter-spacing: 0.6;
+	color: #fff4d3;
+	font-size: 18px;
+	text-align: center;
+	font-weight: 500;
+	background-color: transparent;
+	border: none;
+	outline: none;
+}
+
+#activate_button {
+	background-image: url("../images/activate_button.png");
+}
+
+#activate_button:hover {
+	background-position: -190px center;
+}
+
+#activate_button:active{
+	background-position: -380px center;
+}
+
+#activate_button:disabled {
+	background-position: -570px center;
 }

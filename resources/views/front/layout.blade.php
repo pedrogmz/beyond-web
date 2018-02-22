@@ -26,6 +26,7 @@
 		
 		<link rel="stylesheet" href="{{ asset('css/country.css') }}">
 		<link rel="stylesheet" href="{{ asset('css/font-awesome/css/font-awesome.min.css') }}">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" />
 		<link rel="stylesheet" href="{{ asset('packages/stepwizard/css/stepwizard.css') }}">
 		<link rel="stylesheet" href="{{ asset('css/main.css') }}">
 		@yield('css')
@@ -292,11 +293,13 @@
 		ga('send', 'pageview');
 	</script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script>
 	<script src="{{ asset('packages/stepwizard/js/stepwizard.js') }}"></script>
 	<script src="{{ asset('js/plugins.js') }}"></script>
-	<script type="text/javascript"> var country = "<?= strtolower($_SERVER["HTTP_CF_IPCOUNTRY"]); ?>"; </script>
-	<script type="text/javascript"> var player = "<?= Auth::user()->login ?>"; </script>
+	<script type="text/javascript"> var country = "<?= strtolower('ES'); ?>"; </script>
+	<script type="text/javascript"> var player = "<?= isset(Auth::user()->login) ? Auth::user()->login : '' ?>"; </script>
+	<script>var base_url =  '<?=url('/')?>';</script>
 	<script src="{{ asset('js/main.js') }}"></script>
 	<script>
 		$(function() {

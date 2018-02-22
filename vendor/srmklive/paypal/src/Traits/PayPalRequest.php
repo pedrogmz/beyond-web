@@ -2,20 +2,32 @@
 
 namespace Srmklive\PayPal\Traits;
 
-use GuzzleHttp\Client as HttpClient;
-use GuzzleHttp\Exception\BadResponseException as HttpBadResponseException;
-use GuzzleHttp\Exception\ClientException as HttpClientException;
-use GuzzleHttp\Exception\ServerException as HttpServerException;
 use Illuminate\Support\Collection;
 
 trait PayPalRequest
 {
+    use PayPalHttpClient;
+
     /**
      * Http Client class object.
      *
      * @var HttpClient
      */
     private $client;
+
+    /**
+     * Http Client configuration.
+     *
+     * @var array
+     */
+    private $httpClientConfig;
+
+    /**
+     * PayPal API Certificate data for authentication.
+     *
+     * @var string
+     */
+    private $certificate;
 
     /**
      * PayPal API mode to be used.
@@ -37,6 +49,13 @@ trait PayPalRequest
      * @var array
      */
     private $config;
+
+    /**
+     * Item subtotal.
+     *
+     * @var float
+     */
+    private $subtotal;
 
     /**
      * Default currency for PayPal.
@@ -88,17 +107,21 @@ trait PayPalRequest
     private $httpBodyParam;
 
     /**
+     * Validate SSL details when creating HTTP client.
+     *
+     * @var bool
+     */
+    private $validateSSL;
+
+    /**
      * Function To Set PayPal API Configuration.
      *
      * @param array $config
      *
-     * @return void
+     * @throws \Exception
      */
     private function setConfig(array $config = [])
     {
-        // Setting Http Client
-        $this->client = $this->setClient();
-
         // Set Api Credentials
         if (function_exists('config')) {
             $this->setApiCredentials(
@@ -112,18 +135,26 @@ trait PayPalRequest
     }
 
     /**
-     * Function to initialize Http Client.
+     * Set default values for configuration.
      *
-     * @return HttpClient
+     * @return void
      */
-    protected function setClient()
+    private function setDefaultValues()
     {
-        return new HttpClient([
-            'curl' => [
-                CURLOPT_SSLVERSION     => CURL_SSLVERSION_TLSv1_2,
-                CURLOPT_SSL_VERIFYPEER => false,
-            ],
-        ]);
+        // Set default payment action.
+        if (empty($this->paymentAction)) {
+            $this->paymentAction = 'Sale';
+        }
+
+        // Set default locale.
+        if (empty($this->locale)) {
+            $this->locale = 'en_US';
+        }
+
+        // Set default value for SSL validation.
+        if (empty($this->validateSSL)) {
+            $this->validateSSL = false;
+        }
     }
 
     /**
@@ -146,17 +177,8 @@ trait PayPalRequest
         // Set default currency.
         $this->setCurrency($credentials['currency']);
 
-        // Set default payment action.
-        $this->paymentAction = !empty($this->config['payment_action']) ? $this->config['payment_action'] : 'Sale';
-
-        // Set default locale.
-        $this->locale = !empty($this->config['locale']) ? $this->config['locale'] : 'en_US';
-
-        // Set PayPal API Endpoint.
-        $this->apiUrl = $this->config['api_url'];
-
-        // Set PayPal IPN Notification URL
-        $this->notifyUrl = $credentials['notify_url'];
+        // Set Http Client configuration.
+        $this->setHttpClientConfiguration();
     }
 
     /**
@@ -193,8 +215,28 @@ trait PayPalRequest
 
         // Setup PayPal API Signature value to use.
         $this->config['signature'] = empty($this->config['certificate']) ?
-            $this->config['secret'] : file_get_contents($this->config['certificate']);
+            $this->config['secret'] : $this->config['certificate'];
 
+        $this->paymentAction = $credentials['payment_action'];
+
+        $this->locale = $credentials['locale'];
+
+        $this->certificate = $this->config['certificate'];
+
+        $this->validateSSL = $credentials['validate_ssl'];
+
+        $this->setApiProvider($credentials);
+    }
+
+    /**
+     * Determines which API provider should be used.
+     *
+     * @param array $credentials
+     *
+     * @throws \Exception
+     */
+    private function setApiProvider($credentials)
+    {
         if ($this instanceof \Srmklive\PayPal\Services\AdaptivePayments) {
             $this->setAdaptivePaymentsOptions();
         } elseif ($this instanceof \Srmklive\PayPal\Services\ExpressCheckout) {
@@ -294,57 +336,6 @@ trait PayPalRequest
         if ($method === 'verifyipn') {
             $this->post->forget('METHOD');
         }
-    }
-
-    /**
-     * Perform PayPal API request & return response.
-     *
-     * @throws \Exception
-     *
-     * @return \Psr\Http\Message\StreamInterface
-     */
-    private function makeHttpRequest()
-    {
-        try {
-            return $this->client->post($this->apiUrl, [
-                $this->httpBodyParam => $this->post->toArray(),
-            ])->getBody();
-        } catch (HttpClientException $e) {
-            throw new \Exception($e->getRequest().' '.$e->getResponse());
-        } catch (HttpServerException $e) {
-            throw new \Exception($e->getRequest().' '.$e->getResponse());
-        } catch (HttpBadResponseException $e) {
-            throw new \Exception($e->getRequest().' '.$e->getResponse());
-        }
-    }
-
-    /**
-     * Function To Perform PayPal API Request.
-     *
-     * @param string $method
-     *
-     * @throws \Exception
-     *
-     * @return array|\Psr\Http\Message\StreamInterface
-     */
-    private function doPayPalRequest($method)
-    {
-        // Setup PayPal API Request Payload
-        $this->createRequestPayload($method);
-
-        try {
-            // Perform PayPal HTTP API request.
-            $response = $this->makeHttpRequest();
-
-            return $this->retrieveData($method, $response);
-        } catch (\Exception $e) {
-            $message = collect($e->getTrace())->implode('\n');
-        }
-
-        return [
-            'type'      => 'error',
-            'message'   => $message,
-        ];
     }
 
     /**

@@ -30,7 +30,8 @@ trait RegistersUsers
 
         $this->notifyUser($user);
 
-        return back()->with('confirmation-success', trans('confirmation::confirmation.message'));
+        return $this->registered($request, $user)
+            ?: back()->with('confirmation-success', trans('confirmation::confirmation.message'));
     }
 
     /**
@@ -65,6 +66,10 @@ trait RegistersUsers
             $model = config('auth.providers.users.model');
 
             $user = $model::findOrFail($request->session()->get('user_id'));
+            if (empty($user->confirmation_code)) {
+                $user->confirmation_code = str_random(30);
+                $user->save();
+            }
 
             $this->notifyUser($user);
             

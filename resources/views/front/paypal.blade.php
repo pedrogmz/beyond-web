@@ -12,7 +12,7 @@
 					<div id="progress_bar" class="progress_bar_stage1"></div>
 					<div class="main_board_regular_text" id="first_step">
 						<h2>Selecciona el metodo con el cual deseas pagar</h2>
-						<p id="payment_methods"><?= getPaymentMethodsByCountry($_SERVER["HTTP_CF_IPCOUNTRY"]) ?></p>
+						<p id="payment_methods"><?= getPaymentMethodsByCountry('ES') ?></p>
 					</div>
 				</div>
 			
