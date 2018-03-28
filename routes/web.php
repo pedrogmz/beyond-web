@@ -65,6 +65,8 @@ Route::group(['prefix'=>'language'], function (){
      });
 });
 
+Route::any('/register','Front\PostController@index');
+
 /*
 |--------------------------------------------------------------------------
 | Backend

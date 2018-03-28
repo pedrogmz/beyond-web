@@ -99,7 +99,7 @@
 						<option value="20">2200 Coins - 20 EUR</option>
 						<option value="50">6000 Coins - 50 EUR</option>
 					</select>
-					<input type="hidden" name="cmd" value="_xclick" />
+					<input type="hidden" name="cmd" value="_donations" />
 					<input type="hidden" name="no_shipping" value="1" />
 					<input type="hidden" name="no_note" value="1" />
 					<input type="hidden" name="rm" value="2" />
